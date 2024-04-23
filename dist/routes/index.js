@@ -1,0 +1,26 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const productRoutes_1 = __importDefault(require("./productRoutes/productRoutes"));
+const categoryRoutes_1 = __importDefault(require("./productRoutes/categoryRoutes"));
+const companyRoutes_1 = __importDefault(require("./productRoutes/companyRoutes"));
+const signUpRoutes_1 = __importDefault(require("./userRoutes/signUpRoutes"));
+const signInRoutes_1 = __importDefault(require("./userRoutes/signInRoutes"));
+const userDetailsRoutes_1 = __importDefault(require("./userRoutes/userDetailsRoutes"));
+const logOutRoutes_1 = __importDefault(require("./userRoutes/logOutRoutes"));
+const cartRoutes_1 = __importDefault(require("./cartRoutes/cartRoutes"));
+const orderRoutes_1 = __importDefault(require("./orderRoutes/orderRoutes"));
+const router = (0, express_1.Router)();
+router.use("/api/products", productRoutes_1.default);
+router.use("/api/categories", categoryRoutes_1.default);
+router.use("/api/companies", companyRoutes_1.default);
+router.use("/api/signup", signUpRoutes_1.default);
+router.use("/api/signin", signInRoutes_1.default);
+router.use("/api/user_details", userDetailsRoutes_1.default);
+router.use("/api/logout", logOutRoutes_1.default);
+router.use("/api/cart", cartRoutes_1.default);
+router.use("/api/orders", orderRoutes_1.default);
+exports.default = router;
