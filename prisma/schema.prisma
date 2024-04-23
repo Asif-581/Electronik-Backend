@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model products {
+  id          String      @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name        String
+  description String
+  stock       Int
+  price       Decimal     @db.Decimal(10, 2)
+  image       String
+  created_at  DateTime?   @default(dbgenerated("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")) @db.Timestamp(6)
+  category_id String?     @db.Uuid
+  company_id  String?     @db.Uuid
+  colors      String[]
+  featured    Boolean     @default(false)
+  cart        cart[]
+  categories  categories? @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "product_category")
+  companies   companies?  @relation(fields: [company_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "product_company")
+}
+
+model categories {
+  id                 String     @id(map: "Categories_pkey") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name               String
+  created_at         DateTime?  @default(dbgenerated("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")) @db.Timestamp(6)
+  category_image_url String?
+  products           products[]
+}
+
+model companies {
+  id           String     @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  company_name String
+  created_at   DateTime   @default(dbgenerated("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")) @db.Timestamp(6)
+  products     products[]
+}
+
+model users {
+  id         String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name       String
+  email      String   @unique(map: "email_unique")
+  password   String
+  created_at DateTime @default(dbgenerated("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")) @db.Timestamp(6)
+  role       String   @default(dbgenerated("USER"))
+  cart       cart[]
+}
+
+model cart {
+  cart_id    String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  quantity   Int      @default(1)
+  product_id String   @db.Uuid
+  user_id    String   @db.Uuid
+  color      String
+  created_at DateTime @default(dbgenerated("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")) @db.Timestamp(6)
+  order_id   String?  @db.Uuid
+  orders     orders?  @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cart_orderId_orders_id_FK")
+  products   products @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "product_ref")
+  users      users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_ref")
+}
+
+model orders {
+  id           String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  user_id      String    @db.Uuid
+  address_info Json      @db.Json
+  email        String
+  payment_id   String
+  status       String
+  created_at   DateTime? @default(dbgenerated("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")) @db.Timestamp(6)
+  cart         cart[]
+}
